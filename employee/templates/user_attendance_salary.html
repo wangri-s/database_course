@@ -1,0 +1,106 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+            出勤信息
+        </div>
+
+        <!-- Table -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>年份</th>
+                    <th>月份</th>
+                    <th>姓名</th>
+                    <th>迟到次数</th>
+                    <th>早退次数</th>
+                    <th>请假次数</th>
+                    <th>加班时长</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in queryset1 %}
+                    <tr>
+                        <td>{{ obj.0 }}</td>
+                        <td>{{ obj.1 }}</td>
+                        <td>{{ obj.2 }}</td>
+                        <td>{{ obj.8 }}</td>  <!-- 使用 employee_name -->
+                        <td>{{ obj.4 }}</td>
+                        <td>{{ obj.5 }}</td>
+                        <td>{{ obj.6 }}</td>
+                        <td>{{ obj.7 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+            工资信息
+        </div>
+        <!-- Table -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>年份</th>
+                    <th>月份</th>
+                    <th>姓名</th>
+                    <th>部门</th>
+                    <th>基础薪资</th>
+                    <th>住房补贴</th>
+                    <th>应发金额</th>
+                    <th>应扣金额</th>
+                    <th>实发金额</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in queryset2 %}
+                    <tr>
+                        <td>{{ obj.0 }}</td>
+                        <td>{{ obj.1 }}</td>
+                        <td>{{ obj.2 }}</td>
+                        <td>{{ obj.11}}</td>
+                        <td>{{ obj.10}}</td>
+                        <td>{{ obj.5 }}</td>
+                        <td>{{ obj.6 }}</td>
+                        <td>{{ obj.7 }}</td>
+                        <td>{{ obj.8 }}</td>
+                        <td>{{ obj.9 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 薪资计算规则说明 -->
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+            薪资计算规则
+        </div>
+        <div class="panel-body">
+            <p><strong>基础薪资：</strong> 员工的固定工资。</p>
+            <p><strong>住房补贴：</strong> 每月提供的固定住房补贴。</p>
+            <p><strong>加班费：</strong> 根据加班小时数和系统配置的加班时薪计算。</p>
+            <p><strong>扣款：</strong> 根据员工的考勤情况计算扣款：</p>
+            <ul>
+                <li>迟到扣款：每次迟到按系统配置的比例扣款，迟到一次扣 {{ system_config.2 }}。</li>
+                <li>早退扣款：每次早退按系统配置的比例扣款，早退一次扣 {{ system_config.3 }}。</li>
+                <li>请假扣款：超过最大允许请假天数3天时，多一天扣{{ system_config.4 }}。</li>
+            </ul>
+            <p><strong>加班费：</strong> 加班费按照系统配置的加班时薪计算，时薪为 {{ system_config.5 }}。</p>
+            <p><strong>应发金额：</strong> 基础薪资 + 住房补贴 + 加班费。</p>
+            <p><strong>实发金额：</strong> 应发金额 - 扣款。</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

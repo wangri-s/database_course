@@ -1,0 +1,127 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    {% if messages %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+
+    <div class="container mt-5">
+        {% if user.is_superuser %}
+        <div class="mb-3">
+            <a class="btn btn-success btn-lg shadow-sm" href="/depart/add/">
+                <i class="bi bi-plus-circle"></i> 新建部门
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- 搜索框 -->
+        <div class="mb-3">
+            <form method="get" action="{% url 'depart_search' %}">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control form-control-lg" placeholder="搜索部门" value="{{ search_query }}">
+                    <button class="btn btn-primary btn-lg" type="submit">
+                        <i class="bi bi-search"></i> 搜索
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 部门列表卡片 -->
+        <div class="card shadow-lg rounded-3">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-list-ul"></i> 部门列表
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered table-striped table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>名称</th>
+                            {% if user.is_superuser %}
+                            <th>操作</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in queryset %}
+                            <tr class="hover-effect">
+                                <th>{{ obj.0 }}</th>
+                                <td>{{ obj.1 }}</td>
+                                {% if user.is_superuser %}
+                                <td>
+                                    <a class="btn btn-primary btn-sm" href="/depart/{{ obj.0 }}/edit/">
+                                        <i class="bi bi-pencil"></i> 编辑
+                                    </a>
+                                    <a class="btn btn-danger btn-sm" href="/depart/delete/?nid={{ obj.0 }}" onclick="return confirm('确定删除该部门吗？');">
+                                        <i class="bi bi-trash"></i> 删除
+                                    </a>
+                                </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+<style>
+    /* 按钮样式：添加阴影和过渡效果 */
+    .btn {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+
+    /* 表格行悬停效果 */
+    .table tbody tr.hover-effect:hover {
+        background-color: #f1f1f1;
+        cursor: pointer;
+    }
+
+    /* 卡片的阴影效果 */
+    .card {
+        border-radius: 10px;
+    }
+
+    /* 响应式：让表单和按钮适应不同屏幕 */
+    @media (max-width: 576px) {
+        .btn-lg, .form-control-lg {
+            font-size: 1rem;
+            padding: 0.75rem;
+        }
+    }
+
+    /* 信息提示框：加动画效果 */
+    .alert-info {
+        border-left: 5px solid #17a2b8;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* 表格头部高亮 */
+    .table th {
+        background-color: #e7f3fe;
+        color: #2563eb;
+    }
+</style>

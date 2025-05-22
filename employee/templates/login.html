@@ -1,0 +1,38 @@
+{% extends 'lo.html' %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg" style="width: 100%; max-width: 400px; border-radius: 10px; background-color: transparent; border: none;">
+        <div class="card-header text-white text-center" style="background-color: transparent; border-radius: 10px 10px 0 0;">
+            <h4 class="mb-0"><span class="glyphicon glyphicon-user"></span> 登录</h4>
+        </div>
+        <div class="card-body" style="background-color: transparent;">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="username" class="form-label">用户名</label>
+                    <input type="text" name="username" id="username" class="form-control" placeholder="请输入用户名" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">密码</label>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="请输入密码" required>
+                </div>
+
+                <!-- 显示错误信息 -->
+                {% if messages %}
+                    <div class="alert alert-danger">
+                        {% for message in messages %}
+                            <p class="mb-0">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-outline-dark w-100">登录</button>
+            </form>
+            <div class="text-center mt-3">
+                <a href="{% url 'register' %}" class="text-decoration-none text-white">没有账号？注册一个</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

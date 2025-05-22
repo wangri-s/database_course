@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 80vh;">
+    <!-- 欢迎信息 -->
+    <div id="welcome-message" class="text-center bg-light p-4 rounded shadow-lg" style="display: none; max-width: 600px;">
+        <h1 class="text-primary mb-3">欢迎进入员工工资管理系统！</h1>
+        <p class="text-muted">高效管理员工信息、考勤与薪资，体验智能化办公服务。</p>
+    </div>
+
+    <!-- 开始按钮 -->
+    <div class="mt-4">
+        <a id="start-button" href="/depart/list/" class="btn btn-success btn-lg px-5">点击开始</a>
+    </div>
+</div>
+
+<script>
+    // 页面加载时显示欢迎信息并添加动画效果
+    document.addEventListener('DOMContentLoaded', function () {
+        const welcomeMessage = document.getElementById('welcome-message');
+
+        // 使用 Bootstrap 的 fade 类和 JavaScript 来显示元素
+        welcomeMessage.classList.add('fade');
+        welcomeMessage.style.display = 'block'; // 显示元素
+        setTimeout(() => {
+            welcomeMessage.classList.add('show'); // 添加淡入效果
+        }, 100); // 确保显示后添加动画
+    });
+
+    // 为按钮添加动态效果
+    const startButton = document.getElementById('start-button');
+    startButton.addEventListener('mouseenter', function () {
+        startButton.style.transform = 'scale(1.05)';
+    });
+    startButton.addEventListener('mouseleave', function () {
+        startButton.style.transform = 'scale(1)';
+    });
+</script>
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(to bottom, #e0e7ff, #f3f4f6);
+    }
+
+    #welcome-message {
+        opacity: 0; /* 初始隐藏 */
+        transition: opacity 1.5s ease-in-out; /* 添加渐变效果 */
+    }
+
+    #welcome-message.show {
+        opacity: 1; /* 淡入效果 */
+    }
+
+    .btn-success {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .btn-success:hover {
+        background-color: #157347;
+        border-color: #146c43;
+        transform: scale(1.05); /* 鼠标悬停放大效果 */
+    }
+
+    .btn-success:active {
+        transform: scale(0.95); /* 点击时按压效果 */
+    }
+</style>
+{% endblock %}

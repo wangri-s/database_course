@@ -1,0 +1,172 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        {% if user.is_superuser %}
+            <div class="mb-3">
+                <a class="btn btn-success btn-lg shadow-sm" href="/salary/add/">
+                    <i class="bi bi-plus-circle"></i> 新建薪资记录
+                </a>
+                <a class="btn btn-warning btn-lg shadow-sm" href="/config/edit/">
+                    <i class="bi bi-gear"></i> 变更薪资规则
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- 薪资总览面板 -->
+        <div class="card shadow-lg rounded-3 mb-4">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-list-ul"></i> 薪资总览
+            </div>
+            <div class="card-body">
+                <!-- 搜索框 -->
+                <div class="mb-4">
+                    <form method="get" action="{% url 'salary_search' %}">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-2">
+                                <input type="text" name="year" class="form-control" placeholder="年份"
+                                       value="{{ year_query }}">
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <input type="text" name="month" class="form-control" placeholder="月份"
+                                       value="{{ month_query }}">
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <input type="text" name="employee" class="form-control" placeholder="员工姓名"
+                                       value="{{ employee_query }}">
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <input type="text" name="department" class="form-control" placeholder="部门"
+                                       value="{{ department_query }}">
+                            </div>
+                            <div class="col-md-1">
+                                <button class="btn btn-primary" type="submit" style="white-space: nowrap;">
+                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span> 搜索
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 工资记录表格 -->
+                <table class="table table-bordered table-striped table-hover align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>编号</th>
+                        <th>年份</th>
+                        <th>月份</th>
+                        <th>姓名</th>
+                        <th>部门</th>
+                        <th>基础薪资</th>
+                        <th>住房补贴</th>
+                        <th>应发金额</th>
+                        <th>应扣金额</th>
+                        <th>实发金额</th>
+                        {% if user.is_superuser %}
+                            <th>操作</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for salary in salaries %}
+                        <tr>
+                            <td>{{ salary.0 }}</td>
+                            <td>{{ salary.1 }}</td>
+                            <td>{{ salary.2 }}</td>
+                            <td>{{ salary.10 }}</td>
+                            <td>{{ salary.11 }}</td>
+                            <td>{{ salary.5 }}</td>
+                            <td>{{ salary.6 }}</td>
+                            <td>{{ salary.7 }}</td>
+                            <td>{{ salary.8 }}</td>
+                            <td>{{ salary.9 }}</td>
+                            {% if user.is_superuser %}
+                                <td>
+                                    <a class="btn btn-primary btn-sm" href="/salary/{{ salary.0 }}/edit">
+                                        <i class="bi bi-pencil"></i> 编辑
+                                    </a>
+                                    <a class="btn btn-danger btn-sm" href="/salary/{{ salary.0 }}/delete"
+                                       onclick="return confirm('确定删除该薪资记录吗？');">
+                                        <i class="bi bi-trash"></i> 删除
+                                    </a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 薪资计算规则说明 -->
+        <div class="card shadow-lg rounded-3 mb-4">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-info-circle"></i> 薪资计算规则
+            </div>
+            <div class="card-body">
+                <p><strong>基础薪资：</strong> 员工的固定工资。</p>
+                <p><strong>住房补贴：</strong> 每月提供的固定住房补贴。</p>
+                <p><strong>加班费：</strong> 根据加班小时数和系统配置的加班时薪计算。</p>
+                <p><strong>扣款：</strong> 根据员工的考勤情况计算扣款：</p>
+                <ul>
+                    <li>迟到扣款：每次迟到按系统配置的比例扣款，迟到一次扣 {{ system_config.late_deduction_rate }}。</li>
+                    <li>
+                        早退扣款：每次早退按系统配置的比例扣款，早退一次扣 {{ system_config.early_leave_deduction_rate }}。
+                    </li>
+                    <li>请假扣款：超过最大允许请假天数3天时，多一天扣 {{ system_config.leave_deduction_rate }}。</li>
+                </ul>
+                <p><strong>加班费：</strong>
+                    加班费按照系统配置的加班时薪计算，时薪为 {{ system_config.overtime_bonus_rate }}。</p>
+                <p><strong>应发金额：</strong> 基础薪资 + 住房补贴 + 加班费。</p>
+                <p><strong>实发金额：</strong> 应发金额 - 扣款。</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+<style>
+    /* 按钮样式：增加阴影和过渡效果 */
+    .btn {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+
+    /* 表格行悬停效果 */
+    .table tbody tr:hover {
+        background-color: #f1f1f1;
+        cursor: pointer;
+    }
+
+    /* 卡片样式：添加阴影和圆角 */
+    .card {
+        border-radius: 10px;
+    }
+
+    /* 面板和表格头部样式 */
+    .card-header {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .table th {
+        background-color: #f8fafc;
+        color: #2563eb;
+    }
+
+    /* 响应式设计：使表格和搜索框适应小屏设备 */
+    @media (max-width: 767px) {
+        .col-md-2, .col-md-1 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .btn-lg {
+            font-size: 1rem;
+            padding: 0.5rem;
+        }
+    }
+</style>

@@ -1,0 +1,30 @@
+<!-- modify_user_admin_status.html -->
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <h2>修改用户权限</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div>
+      <label for="username">用户名:</label>
+      <input type="text" id="username" name="username" value="{{ user.username }}" readonly>
+    </div>
+
+    <div>
+      <label for="is_staff">管理员权限 (is_staff):</label>
+      <input type="checkbox" id="is_staff" name="is_staff" {% if user.is_staff %}checked{% endif %}>
+    </div>
+
+    <div>
+      <label for="is_superuser">超级管理员权限 (is_superuser):</label>
+      <input type="checkbox" id="is_superuser" name="is_superuser" {% if user.is_superuser %}checked{% endif %}>
+    </div>
+
+    <div>
+      <button type="submit">更新权限</button>
+    </div>
+  </form>
+
+  <a href="{% url 'admin:user_list' %}">返回用户列表</a>
+{% endblock %}

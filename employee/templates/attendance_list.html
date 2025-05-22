@@ -1,0 +1,158 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        {% if user.is_superuser %}
+            <!-- 仅管理员才能看到新增考勤记录按钮 -->
+            <div class="mb-3">
+                <a class="btn btn-success btn-lg shadow-sm" href="/attendance/add/">
+                    <i class="bi bi-plus-circle"></i> 新建考勤记录
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- 显示消息 -->
+        {% if messages %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+
+        <!-- 添加搜索框 -->
+        <div class="mb-3">
+    <form method="get" action="{% url 'attendance_search' %}">
+        <div class="row g-3">
+            <div class="col-12 col-md-2">
+                <input type="text" name="year" class="form-control" placeholder="年份" value="{{ year_query }}">
+            </div>
+            <div class="col-12 col-md-2">
+                <input type="text" name="month" class="form-control" placeholder="月份" value="{{ month_query }}">
+            </div>
+            <div class="col-12 col-md-2">
+                <input type="text" name="employee" class="form-control" placeholder="员工姓名" value="{{ employee_query }}">
+            </div>
+            <div class="col-12 col-md-2">
+                <input type="text" name="department" class="form-control" placeholder="部门" value="{{ department_query }}">
+            </div>
+            <!-- 修改按钮所在列，确保它不被挤到下一行 -->
+            <div class="col-md-1">
+                <button class="btn btn-primary" type="submit" style="white-space: nowrap;">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span> 搜索
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+        <!-- 出勤总览面板 -->
+        <div class="card shadow-lg rounded-3">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-calendar-check"></i> 出勤总览
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered table-striped table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>编号</th>
+                            <th>年份</th>
+                            <th>月份</th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>迟到次数</th>
+                            <th>早退次数</th>
+                            <th>请假次数</th>
+                            <th>加班时长</th>
+                            {% if user.is_superuser %}
+                                <th>操作</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in queryset %}
+                            <tr>
+                                <td>{{ obj.0 }}</td>
+                                <td>{{ obj.1 }}</td>
+                                <td>{{ obj.2 }}</td>
+                                <td>{{ obj.3 }}</td>
+                                <td>{{ obj.4 }}</td>
+                                <td>{{ obj.5 }}</td>
+                                <td>{{ obj.6 }}</td>
+                                <td>{{ obj.7 }}</td>
+                                <td>{{ obj.8 }}</td>
+
+                                {% if user.is_superuser %}
+                                    <td>
+                                        <a class="btn btn-primary btn-sm" href="/attendance/{{ obj.0 }}/edit">
+                                            <i class="bi bi-pencil"></i> 编辑
+                                        </a>
+                                        <a class="btn btn-danger btn-sm" href="/attendance/{{ obj.0 }}/delete" onclick="return confirm('确定删除该考勤记录吗？');">
+                                            <i class="bi bi-trash"></i> 删除
+                                        </a>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+<style>
+    /* 按钮样式：增加阴影和过渡效果 */
+    .btn {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+
+    /* 表格行悬停效果 */
+    .table tbody tr:hover {
+        background-color: #f1f1f1;
+        cursor: pointer;
+    }
+
+    /* 卡片样式：添加阴影和圆角 */
+    .card {
+        border-radius: 10px;
+    }
+
+    /* 搜索框的样式 */
+    .form-control {
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 面板和表格头部样式 */
+    .card-header {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .table th {
+        background-color: #f8fafc;
+        color: #2563eb;
+    }
+
+    /* 响应式设计：使表格和搜索框适应小屏设备 */
+    @media (max-width: 767px) {
+        .col-md-2, .col-md-1 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .btn-lg {
+            font-size: 1rem;
+            padding: 0.5rem;
+        }
+    }
+</style>
